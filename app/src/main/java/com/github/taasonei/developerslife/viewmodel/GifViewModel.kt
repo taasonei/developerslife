@@ -56,29 +56,36 @@ class GifViewModel : ViewModel() {
     }
 
     fun loadNextGif() {
-        when (gif.value) {
-            is State.Success<GifApiModel> -> {
-                if (stackNext.isNotEmpty()) {
-                    stackPrevious.push((gif.value as State.Success<GifApiModel>).data)
-                    _gif.value = State.Success(stackNext.pop())
-                    _count.value = count.value?.plus(ONE)
-                    Log.d("test", count.value.toString())
-                } else {
-                    stackPrevious.push((gif.value as State.Success<GifApiModel>).data)
-                    loadGif()
-                    _count.value = count.value?.plus(ONE)
-                    Log.d("test", count.value.toString())
-                }
+        if (stackNext.isNotEmpty()) {
+            if (gif.value is State.Success<GifApiModel>) {
+                stackPrevious.push((gif.value as State.Success<GifApiModel>).data)
             }
-            else -> loadGif()
+            _gif.value = State.Success(stackNext.pop())
+            if (gif.value is State.Success<GifApiModel>) {
+                _count.value = count.value?.plus(ONE)
+            }
+            Log.d("test", count.value.toString())
+        } else {
+            if (gif.value is State.Success<GifApiModel>) {
+                stackPrevious.push((gif.value as State.Success<GifApiModel>).data)
+            }
+            loadGif()
+            if (gif.value is State.Success<GifApiModel>) {
+                _count.value = count.value?.plus(ONE)
+            }
+            Log.d("test", count.value.toString())
+
         }
+
     }
 
     fun loadPreviousGif() {
-        if (gif.value is State.Success<GifApiModel>) {
-            if (stackPrevious.isNotEmpty()) {
+        if (stackPrevious.isNotEmpty()) {
+            if (gif.value is State.Success<GifApiModel>) {
                 stackNext.push((gif.value as State.Success<GifApiModel>).data)
-                _gif.value = State.Success(stackPrevious.pop())
+            }
+            _gif.value = State.Success(stackPrevious.pop())
+            if (gif.value is State.Success<GifApiModel>) {
                 _count.value = count.value?.minus(ONE)
             }
         }
